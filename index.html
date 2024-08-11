@@ -1,0 +1,175 @@
+<html><head><base href="https://batman-matrix-remix.com/">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Batman Matrix Remix</title>
+<style>
+  body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+    background-color: #000;
+    font-family: 'Courier New', monospace;
+    color: #0f0;
+  }
+  #matrix-rain {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+  #batman-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+  }
+  #batman-image {
+    width: 300px;
+    height: auto;
+    filter: drop-shadow(0 0 10px #0f0);
+  }
+  .code-snippet {
+    position: fixed;
+    font-size: 14px;
+    color: #0f0;
+    text-shadow: 0 0 5px #0f0;
+    pointer-events: none;
+  }
+</style>
+</head>
+<body>
+  <canvas id="matrix-rain"></canvas>
+  <div id="batman-container">
+    <img id="batman-image" src="new_batman_image.png" alt="Matrix-themed Batman with glowing red eyes raising his hand">
+  </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+<script>
+  // Matrix rain effect
+  const canvas = document.getElementById('matrix-rain');
+  const ctx = canvas.getContext('2d');
+
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const katakana = 'アァカサタナハマヤャラワガザダバパイィキシチニヒミリヰギジヂビピウゥクスツヌフムユュルグズブヅプエェケセテネヘメレヱゲゼデベペオォコソトノホモヨョロヲゴゾドボポヴッン';
+  const latin = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  const nums = '0123456789';
+  const alphabet = katakana + latin + nums;
+
+  const fontSize = 16;
+  const columns = canvas.width / fontSize;
+
+  const rainDrops = [];
+
+  for (let x = 0; x < columns; x++) {
+    rainDrops[x] = 1;
+  }
+
+  const draw = () => {
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = '#0f0';
+    ctx.font = fontSize + 'px monospace';
+
+    for (let i = 0; i < rainDrops.length; i++) {
+      const text = alphabet.charAt(Math.floor(Math.random() * alphabet.length));
+      ctx.fillText(text, i * fontSize, rainDrops[i] * fontSize);
+
+      if (rainDrops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+        rainDrops[i] = 0;
+      }
+      rainDrops[i]++;
+    }
+  };
+
+  setInterval(draw, 30);
+
+  // Glitchy Batman effect
+  const batmanImage = document.getElementById('batman-image');
+  
+  function glitchEffect() {
+    gsap.to(batmanImage, {
+      duration: 0.1,
+      x: () => Math.random() * 10 - 5,
+      y: () => Math.random() * 10 - 5,
+      rotation: () => Math.random() * 4 - 2,
+      filter: 'hue-rotate(' + Math.random() * 360 + 'deg) saturate(' + (Math.random() * 2 + 1) + ')',
+      opacity: () => Math.random() * 0.5 + 0.5,
+      repeat: -1,
+      yoyo: true,
+      ease: 'power1.inOut'
+    });
+  }
+
+  glitchEffect();
+
+  // Floating code snippets
+  const codeSnippets = [
+    'if (batman.isAwake()) { saveGotham(); }',
+    'for (let i = 0; i < infinity; i++) { fightCrime(); }',
+    'while (gothamNeedsMe) { beTheHero(); }',
+    'try { defeatJoker(); } catch (e) { callRobin(); }',
+    'function useBatarang() { return "It\'s super effective!"; }'
+  ];
+
+  function createCodeSnippet() {
+    const snippet = document.createElement('div');
+    snippet.className = 'code-snippet';
+    snippet.textContent = codeSnippets[Math.floor(Math.random() * codeSnippets.length)];
+    snippet.style.left = Math.random() * window.innerWidth + 'px';
+    snippet.style.top = Math.random() * window.innerHeight + 'px';
+    document.body.appendChild(snippet);
+
+    gsap.to(snippet, {
+      duration: Math.random() * 5 + 5,
+      y: '-=100',
+      opacity: 0,
+      ease: 'power1.in',
+      onComplete: () => {
+        snippet.remove();
+        createCodeSnippet();
+      }
+    });
+  }
+
+  for (let i = 0; i < 5; i++) {
+    createCodeSnippet();
+  }
+
+  // Interactive elements
+  document.addEventListener('click', () => {
+    gsap.to(batmanImage, {
+      duration: 0.5,
+      scale: 1.2,
+      rotation: 360,
+      ease: 'back.out(1.7)',
+      onComplete: () => {
+        gsap.to(batmanImage, {
+          duration: 0.5,
+          scale: 1,
+          rotation: 0,
+          ease: 'power2.out'
+        });
+      }
+    });
+  });
+
+  document.addEventListener('mousemove', (e) => {
+    const xAxis = (window.innerWidth / 2 - e.pageX) / 25;
+    const yAxis = (window.innerHeight / 2 - e.pageY) / 25;
+    gsap.to(batmanImage, {
+      duration: 0.5,
+      rotationY: xAxis,
+      rotationX: yAxis,
+      ease: 'power2.out'
+    });
+  });
+</script>
+</body>
+</html>
